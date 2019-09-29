@@ -1,0 +1,27 @@
+.beyHub-tag{
+  border: 1px solid #e9e9eb;
+  font-size: 12px;
+  background-color: #f4f4f5;
+  color: #909399;
+  margin-bottom: 5px;
+  padding: 5px;
+  cursor: pointer;
+}
+.beyHub-tag:hover{
+  background-color: #d8d8d8;
+}
+.beyHub-label{
+  display: block;
+  width: 100%;
+  margin-bottom: 5px;
+  color: rgba(0, 0, 0, 0.54);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 15px;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.mui-panel{
+  text-align: left;
+}

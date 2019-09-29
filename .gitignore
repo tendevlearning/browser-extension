@@ -1,0 +1,11 @@
+.DS_Store
+node_modules/
+.idea/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+/dist/index.html
+/dist/static/css
+/dist/static/js
+dist.crx
+output.zip
