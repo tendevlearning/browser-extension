@@ -11,10 +11,10 @@
         <v-divider></v-divider>
         <v-card-text>
           <v-layout row wrap>
-            <v-flex sm6>
+            <v-flex sm12>
               <v-text-field prepend-icon="bookmark_border" v-model="bookmark.title" label="书签名"></v-text-field>
             </v-flex>
-            <v-flex sm6>
+            <v-flex sm12>
               <v-text-field v-model="bookmark.url" prepend-icon="link" label="URL"></v-text-field>
             </v-flex>
             <v-flex sm6>
@@ -62,13 +62,12 @@
                  block>保存书签
           </v-btn>
         </v-card-actions>
-        <v-divider></v-divider>
         <v-card-text>
           <v-list dense>
             <v-subheader>快捷保存</v-subheader>
             <template v-for="(item, index) in recent">
               <v-divider></v-divider>
-              <v-list-tile :key="item.title" @click="saveBookmark(item.widgetId)">
+              <v-list-tile :key="item.title" @click="saveBookmark(item.widgetId);selectedPage.id=item.pageId">
                 <v-list-tile-content>
                   <v-list-tile-title>{{ item.pageTitle }} - {{ item.widgetTitle }}</v-list-tile-title>
                 </v-list-tile-content>
@@ -151,7 +150,10 @@
           this.bookmark.title = tabObj.title;
           this.bookmark.url = tabObj.url;
           this.loadPages();
-          if (!this.is_login) this.openUrl('https://beyhub.com/login')
+          if (!this.is_login){
+            this.showMessage("请先登录");
+            this.openUrl('https://beyhub.com/login')
+          }
         }, 100)
       },
       openUrl(url) {
@@ -214,7 +216,7 @@
       },
       showMessage(message) {
         if (this.run_as_extension) {
-          bgPage.showNotifications(message);
+          bgPage.showNotifications({message:message,pageId:this.selectedPage.id});
           window.close();
         } else {
           alert(message);

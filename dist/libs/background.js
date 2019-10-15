@@ -24,7 +24,7 @@ function showNotifications(data){
     let notification = window.webkitNotifications.createNotification(
       'images/icon48.png',  // icon url - can be relative
       'beyhub.com',  // notification title
-      data  // notification body text
+      data.message  // notification body text
     );
     notification.show();
     // 设置3秒后，将桌面通知dismiss
@@ -33,7 +33,7 @@ function showNotifications(data){
     let opt = {
       type: 'basic',
       title: 'beyhub.com',
-      message: data,
+      message: data.message,
       iconUrl: 'images/icon48.png',
     };
     chrome.notifications.create('', opt, function(id){
@@ -41,6 +41,9 @@ function showNotifications(data){
         chrome.notifications.clear(id, function(){});
       }, 3000);
     });
+    chrome.notifications.onClicked.addListener(()=>{
+      beyutil.openUrlCurrentTab(`https://beyhub.com/p/${data.pageId}`);
+    })
   }else{
     alert('当前浏览器不支持消息通知');
   }
