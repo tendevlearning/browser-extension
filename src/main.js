@@ -4,14 +4,12 @@ import Vue from 'vue';
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import App from './App';
-import ElementUI from 'element-ui';
-import 'element-ui/lib/theme-default/index.css';
+import Vuetify from 'vuetify'
+import 'vuetify/dist/vuetify.min.css'
 
-import '@/assets/style.less';
-
+import '@/assets/main.css';
 Vue.use(VueAxios, axios);
-Vue.use(ElementUI);
-
+Vue.use(Vuetify);
 Vue.config.productionTip = false;
 
 /* eslint-disable no-new */

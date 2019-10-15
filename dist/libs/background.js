@@ -1,3 +1,8 @@
+function currentTab(cb) {
+  chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
+    cb(tabs[0]);
+  });
+}
 (function () {
   setInterval(function () {
     beyutil.checkBeyAuth();
