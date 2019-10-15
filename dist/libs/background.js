@@ -28,8 +28,7 @@ function showNotifications(data){
     );
     notification.show();
     // 设置3秒后，将桌面通知dismiss
-    setTimeout(function(){notification.cancel();}, 2000);
-
+    setTimeout(function(){notification.cancel();}, 3000);
   }else if(chrome.notifications){
     let opt = {
       type: 'basic',
@@ -40,7 +39,7 @@ function showNotifications(data){
     chrome.notifications.create('', opt, function(id){
       setTimeout(function(){
         chrome.notifications.clear(id, function(){});
-      }, 2000);
+      }, 3000);
     });
   }else{
     alert('当前浏览器不支持消息通知');

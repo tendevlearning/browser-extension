@@ -10,45 +10,57 @@
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text>
-          <v-text-field v-model="bookmark.title" label="书签名"></v-text-field>
-          <v-text-field v-model="bookmark.url" label="URL"></v-text-field>
-          <v-divider></v-divider>
-          <v-autocomplete
-            v-model="selectedPage"
-            :items="pages"
-            :loading="isLoading"
-            :search-input.sync="searchPage"
-            hide-no-data
-            hide-selected
-            @change="loadWidgets"
-            auto-select-first
-            item-text="title"
-            item-value="id"
-            placeholder="选择看板"
-            dense
-            prepend-icon="picture_in_picture_alt"
-            return-object
-          ></v-autocomplete>
-          <v-autocomplete
-            v-model="selectWidget"
-            :items="widgets"
-            :loading="isLoading"
-            hide-selected
-            :search-input.sync="searchWidget"
-            prepend-icon="widgets"
-            auto-select-first
-            hide-no-data
-            dense
-            item-text="title"
-            item-value="id"
-            placeholder="选择碎片"
-            return-object
-          ></v-autocomplete>
+          <v-layout row wrap>
+            <v-flex sm6>
+              <v-text-field v-model="bookmark.title" label="书签名"></v-text-field>
+            </v-flex>
+            <v-flex sm6>
+              <v-text-field v-model="bookmark.url" label="URL"></v-text-field>
+            </v-flex>
+            <v-flex sm6>
+              <v-autocomplete
+                v-model="selectedPage"
+                :items="pages"
+                :loading="isLoading"
+                :search-input.sync="searchPage"
+                hide-no-data
+                hide-selected
+                @change="loadWidgets"
+                auto-select-first
+                item-text="title"
+                item-value="id"
+                placeholder="选择看板"
+                dense
+                prepend-icon="picture_in_picture_alt"
+                return-object
+              ></v-autocomplete>
+            </v-flex>
+            <v-flex sm6>
+              <v-autocomplete
+                v-model="selectWidget"
+                :items="widgets"
+                :loading="isLoading"
+                hide-selected
+                :search-input.sync="searchWidget"
+                prepend-icon="widgets"
+                auto-select-first
+                hide-no-data
+                dense
+                item-text="title"
+                item-value="id"
+                placeholder="选择碎片"
+                return-object
+              ></v-autocomplete>
+            </v-flex>
+          </v-layout>
           <v-divider></v-divider>
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
-          <v-btn color="primary" @click="saveBookmark" block>保存书签</v-btn>
+          <v-btn flat @click="openUrl(`https://beyhub.com/p/${selectedPage.id}`)"><v-icon>open_in_new</v-icon></v-btn>
+          <v-btn color="primary" :disabled="!(selectWidget.id&&selectedPage.id)" @click="saveBookmark(selectWidget.id)"
+                 block>保存书签
+          </v-btn>
         </v-card-actions>
         <v-divider></v-divider>
         <v-card-text>
@@ -60,9 +72,12 @@
                   <v-list-tile-title>{{ item.pageTitle }} - {{ item.widgetTitle }}</v-list-tile-title>
                 </v-list-tile-content>
                 <v-list-tile-action>
-                  <v-btn icon small @click.stop.native="openUrl(`https://beyhub.com/w/${item.widgetId}`)"><v-icon small>open_in_new</v-icon></v-btn>
+                  <v-btn icon small @click.stop.native="openUrl(`https://beyhub.com/w/${item.widgetId}`)">
+                    <v-icon small>open_in_new</v-icon>
+                  </v-btn>
                 </v-list-tile-action>
               </v-list-tile>
+              <v-divider></v-divider>
             </template>
           </v-list>
         </v-card-text>
@@ -140,7 +155,7 @@
         }, 100)
       },
       openUrl(url) {
-        window.open(url,'_blank')
+        window.open(url, '_blank')
       },
       async loadPages() {
         this.isLoading = true;
@@ -165,27 +180,25 @@
         }
       },
       async saveBookmark(widgetId) {
-        console.log(widgetId);
-        let resp = await this.$http.post(`https://beyhub.com/api/pages/ext/page/${widgetId || this.selectWidget.id}/save-item`, {
+        let wId = widgetId || this.selectWidget.id;
+        if (!wId) {
+          this.showMessage("请先选择看板和碎片");
+        }
+        let resp = await this.$http.post(`https://beyhub.com/api/pages/ext/page/${wId}/save-item`, {
           b: this.bookmark.title,
           d: this.bookmark.url,
           favIconUrl: this.bookmark.favIconUrl,
-          widgetId: widgetId || this.selectWidget.id
+          widgetId: wId
         }, {
           headers: {Authorization: 'Bearer ' + this.access_token}
         });
         let message;
-        if (resp.data.code === 0 && resp.status===200) {
+        if (resp.data.code === 0 && resp.status === 200) {
           message = "书签已保存";
-        }else{
-          message = "保存失败";
-        }
-        if (this.run_as_extension) {
-          bgPage.showNotifications(message);
-          window.close();
         } else {
-          alert(message);
+          message = "保存失败：" + resp.data.message;
         }
+        this.showMessage(message);
       },
       async loadWidgets() {
         let resp = await this.$http.get(`https://beyhub.com/api/pages/ext/page/${this.selectedPage.id}/widgets`, {
@@ -197,6 +210,14 @@
           this.widgets = resp.data.data;
         } else {
           console.log(resp);
+        }
+      },
+      showMessage(message) {
+        if (this.run_as_extension) {
+          bgPage.showNotifications(message);
+          window.close();
+        } else {
+          alert(message);
         }
       }
     }
