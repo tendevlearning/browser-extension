@@ -12,10 +12,10 @@
         <v-card-text>
           <v-layout row wrap>
             <v-flex sm6>
-              <v-text-field v-model="bookmark.title" label="书签名"></v-text-field>
+              <v-text-field prepend-icon="bookmark_border" v-model="bookmark.title" label="书签名"></v-text-field>
             </v-flex>
             <v-flex sm6>
-              <v-text-field v-model="bookmark.url" label="URL"></v-text-field>
+              <v-text-field v-model="bookmark.url" prepend-icon="link" label="URL"></v-text-field>
             </v-flex>
             <v-flex sm6>
               <v-autocomplete
@@ -53,11 +53,11 @@
               ></v-autocomplete>
             </v-flex>
           </v-layout>
-          <v-divider></v-divider>
         </v-card-text>
-        <v-divider></v-divider>
         <v-card-actions>
-          <v-btn flat @click="openUrl(`https://beyhub.com/p/${selectedPage.id}`)"><v-icon>open_in_new</v-icon></v-btn>
+          <v-btn flat @click="openUrl(`https://beyhub.com/p/${selectedPage.id}`)">
+            <v-icon>open_in_new</v-icon>
+          </v-btn>
           <v-btn color="primary" :disabled="!(selectWidget.id&&selectedPage.id)" @click="saveBookmark(selectWidget.id)"
                  block>保存书签
           </v-btn>
@@ -67,6 +67,7 @@
           <v-list dense>
             <v-subheader>快捷保存</v-subheader>
             <template v-for="(item, index) in recent">
+              <v-divider></v-divider>
               <v-list-tile :key="item.title" @click="saveBookmark(item.widgetId)">
                 <v-list-tile-content>
                   <v-list-tile-title>{{ item.pageTitle }} - {{ item.widgetTitle }}</v-list-tile-title>
@@ -77,7 +78,6 @@
                   </v-btn>
                 </v-list-tile-action>
               </v-list-tile>
-              <v-divider></v-divider>
             </template>
           </v-list>
         </v-card-text>
