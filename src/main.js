@@ -11,6 +11,7 @@ import '@/assets/main.css';
 Vue.use(VueAxios, axios);
 Vue.use(Vuetify);
 Vue.config.productionTip = false;
+Vue.prototype.$http.defaults.withCredentials = false;
 
 /* eslint-disable no-new */
 new Vue({

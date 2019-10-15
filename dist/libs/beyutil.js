@@ -80,31 +80,6 @@ window.beyutil = {
       console.log(resp);
     }
   },
-  saveBookmark: async function (access_token) {
-    if (!$('#beyHub-secondCategory').val()) {
-      let r = confirm("您还没创建任何一个页面，请前往拾呗新建页面和碎片");
-      if (r) {
-        window.open('https://beyhub.com');
-      }
-    }
-    let resp = await axios.post('https://beyhub.com/api/pages/ext/page/' + $('#beyHub-secondCategory').val() + '/save-item', {
-      b: $('#beyHub-name').val(),
-      d: $('#beyHub-url').val(),
-      widgetId: $('#beyHub-secondCategory').val()
-    }, {
-      headers: {Authorization: 'Bearer ' + access_token}
-    });
-    if (resp.data.code === 0) {
-      mui.overlay('off');
-      $('.bey-alert').html('保存成功').addClass('bey-alert-success').show();
-      setTimeout(() => {
-        $('.bey-alert').hide();
-      }, 2000);
-    } else {
-      $('.bey-alert').html(resp.data.message).addClass('bey-alert-danger').show();
-      console.log(resp);
-    }
-  },
   /**
    * 获取当前选项卡ID
    */
@@ -120,30 +95,6 @@ window.beyutil = {
     beyutil.getCurrentTabId(function (tabId) {
       chrome.tabs.update(tabId, {url: url});
     })
-  },
-  /**
-   * 获取登录信息，刷入storage
-   */
-  checkBeyAuth: function () {
-    const url = 'https://beyhub.com';
-    chrome.cookies.getAll({url}, function (cookies) {
-      for (let i = 0; i < cookies.length; i++) {
-        if (cookies[i].name === 'beyauth') {
-          let newBeyAuth = JSON.parse(decodeURIComponent(cookies[i].value));
-          // chrome.storage.sync.remove("beyauth", () => {
-          //   console.log('remove')
-          // })
-          chrome.storage.sync.get("beyauth", function (beyAuth) {
-            if (!beyAuth.beyauth || beyAuth.beyauth.access_token !== newBeyAuth.access_token) {
-              chrome.storage.sync.set({"beyauth": newBeyAuth}, function () {
-                console.log("background.js 更新access_token：", "beyAuth: ", JSON.stringify(beyAuth), 'newBeyAuth: ', JSON.stringify(newBeyAuth))
-              });
-            }
-          })
-          break;
-        }
-      }
-    });
   },
   /**
    * 转义

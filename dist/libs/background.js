@@ -1,104 +1,63 @@
+let cookie = {};
 function currentTab(cb) {
   chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
     cb(tabs[0]);
   });
 }
-(function () {
-  setInterval(function () {
-    beyutil.checkBeyAuth();
-  }, 600);
-  /**
-   * 收藏当前页面
-   *
-   * @param info
-   * @param tab
-   * @constructor
-   */
-  let StorePageToBookmarkDialog = function () {
-    console.log("background.js", 'StorePageToBookmarkDialog');
-    chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-      let message = {
-        action: 'showBookmarkDialog',
-        data: tabs[0]
-      };
-      chrome.tabs.sendMessage(tabs[0].id, message, function (response) {
-        console.log(response);
-      });
-    });
-  };
-  let StoreLinkToBookmarkDialog = function (data) {
-    console.log("background.js", 'StorePageToBookmarkDialog', data);
-    let message = {
-      action: 'showBookmarkDialog',
-      data: {
-        title: data.selectionText,
-        url: data.linkUrl,
+function getCookie(cb) {
+  chrome.cookies.getAll({
+    url: 'https://beyhub.com',
+  }, (cookies) => {
+    for (let i = 0; i < cookies.length; i++) {
+      if (cookies[i].name === 'beyauth') {
+        cookie = JSON.parse(decodeURIComponent(cookies[i].value));
+        cb(cookie)
+        break;
       }
+    }
+  });
+}
+//将data数据以桌面通知的方式显示给用户
+function showNotifications(data){
+  //显示一个桌面通知
+  if(window.webkitNotifications){
+    let notification = window.webkitNotifications.createNotification(
+      'images/icon48.png',  // icon url - can be relative
+      'beyhub.com',  // notification title
+      data  // notification body text
+    );
+    notification.show();
+    // 设置3秒后，将桌面通知dismiss
+    setTimeout(function(){notification.cancel();}, 2000);
+
+  }else if(chrome.notifications){
+    let opt = {
+      type: 'basic',
+      title: 'beyhub.com',
+      message: data,
+      iconUrl: 'images/icon48.png',
     };
-    chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-      chrome.tabs.sendMessage(tabs[0].id, message, function (response) {
-        console.log(response);
-      });
+    chrome.notifications.create('', opt, function(id){
+      setTimeout(function(){
+        chrome.notifications.clear(id, function(){});
+      }, 2000);
     });
-  };
-  let setUpContextMenus = function () {
-    chrome.contextMenus.create({
-      "title": "收藏本页至 beyhub.com",
-      "contexts": ['page'],
-      "onclick": StorePageToBookmarkDialog
-    });
-    chrome.contextMenus.create({
-      "title": "接藏该链接至 beybub.com",
-      "contexts": ['link'],
-      "onclick": StoreLinkToBookmarkDialog
-    });
-  };
-  chrome.extension.onMessage.addListener(function (request, sender, sendResponse) {
-    // example
-    if (request.action === 'example') {
-      let histories = window.localStorage.getItem(BOOKMARK_DIRS);
-      if (histories) {
-        sendResponse({code: 0, data: JSON.parse(histories)});
-      } else {
-        sendResponse({code: 0, data: []});
-      }
-    }
+  }else{
+    alert('当前浏览器不支持消息通知');
+  }
+}
+(function () {
+  getCookie((cookie)=>{
+    console.log(cookie)
   });
-  chrome.tabs.onActiveChanged.addListener(function () {
-    chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
-      if (tabs.length) {
-        chrome.contextMenus.removeAll();
-        if (tabs[0].url.indexOf('chrome://') === -1) {
-          setUpContextMenus();
-        }
-      }
-    });
-  });
-  /**
-   * 右键菜单
-   */
-  chrome.tabs.onUpdated.addListener(function (tabId, selectInfo, tab) {
-    if (tab) {
-      chrome.contextMenus.removeAll();
-      // 排除系统页
-      if (tab.url.indexOf('chrome://') === -1) {
-        setUpContextMenus();
-      }
-    }
-  });
-
-  chrome.runtime.onInstalled.addListener(function () {
-    setUpContextMenus();
-  });
-
   chrome.omnibox.onInputChanged.addListener(debounce(function (text, suggest) {
     console.log('omnibox.inputChanged: ' + text);
     if (!text || text.length <= 1) return;
     const url = 'https://beyhub.com';
-    chrome.storage.sync.get("beyauth", async function (beyAuth) {
-      console.info("background.js " + JSON.stringify(beyAuth));
-      let accessToken = beyAuth.beyauth.access_token;
-      let resp = await axios.get('http://beyhub.com/api/pages/ext/search', {
+    getCookie(async function (cookie) {
+      console.info("background.js " + JSON.stringify(cookie));
+      let accessToken = cookie.access_token;
+      let resp = await axios.get('https://beyhub.com/api/pages/ext/search', {
         headers: {
           Authorization: 'Bearer ' + accessToken
         },
