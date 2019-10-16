@@ -2,19 +2,19 @@
   "manifest_version": 2,
   "name": "拾贝 beyhub.com",
   "version": "1.0.6",
-  "description": "高效的书签管理工具",
+  "description": "做信息洪流中的一杆旗帜",
   "icons": {
-    "16": "images/logo16.png",
-    "48": "images/logo48.png",
-    "128": "images/logo128.png"
+    "16": "images/icon16.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
   },
   "web_accessible_resources": [
-    "images/logo128.png"
+    "images/icon128.png"
   ],
   "browser_action": {
     "default_icon": {
-      "16": "images/logo16.png",
-      "48": "images/logo48.png"
+      "16": "images/icon16.png",
+      "48": "images/icon48.png"
     },
     "default_title": "beyhub.com",
     "default_popup": "popup.html"
@@ -51,13 +51,10 @@
       ],
       "js": [
         "libs/axios.min.js",
-        "libs/zepto.min.js",
         "libs/beyutil.js",
-        "libs/mui.min.js",
         "content.js"
       ],
       "css": [
-        "libs/mui_simple.min.css",
         "libs/content.css"
       ],
       "run_at": "document_start",

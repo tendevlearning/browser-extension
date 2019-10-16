@@ -7,6 +7,8 @@
             <img :src="bookmark.favIconUrl" alt="favicon">
           </v-avatar>
           <span class="title ml-2">将当前页加入书签</span>
+          <v-spacer></v-spacer>
+          <v-btn flat @click="openUrl('https://beyhub.com')">进入官网</v-btn>
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text>
@@ -70,6 +72,7 @@
               <v-list-tile :key="item.title" @click="saveBookmark(item.widgetId);selectedPage.id=item.pageId">
                 <v-list-tile-content>
                   <v-list-tile-title>{{ item.pageTitle }} - {{ item.widgetTitle }}</v-list-tile-title>
+                  <v-list-tile-sub-title>{{ dateFormat(item.createdAt) }}</v-list-tile-sub-title>
                 </v-list-tile-content>
                 <v-list-tile-action>
                   <v-btn icon small @click.stop.native="openUrl(`https://beyhub.com/w/${item.widgetId}`)">
@@ -86,6 +89,11 @@
 </template>
 
 <script>
+  import dayjs from "dayjs"
+  import relativeTime from 'dayjs/plugin/relativeTime'
+  import zh_cn from 'dayjs/locale/zh-cn'
+  dayjs.locale(zh_cn);
+  dayjs.extend(relativeTime);
   let bgPage;
   if (chrome.extension) {
     bgPage = chrome.extension.getBackgroundPage();
@@ -134,7 +142,7 @@
           })
         } else {
           // web开发模式下测试用
-          this.access_token = '5c18e675-fd77-4738-87ee-b748086e7a89';
+          this.access_token = '467472ba-b18a-465c-bc29-d92f4b12567c';
           tabObj = {
             "favIconUrl": "https://g.alicdn.com/trip/tools/img/favicon.ico",
             "highlighted": true,
@@ -213,6 +221,9 @@
         } else {
           console.log(resp);
         }
+      },
+      dateFormat(date){
+        return dayjs(date).toNow();
       },
       showMessage(message) {
         if (this.run_as_extension) {
