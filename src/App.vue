@@ -8,7 +8,7 @@
           </v-avatar>
           <span class="title ml-2">将当前页加入书签</span>
           <v-spacer></v-spacer>
-          <v-btn flat @click="openUrl('https://beyhub.com')">进入官网</v-btn>
+          <v-btn color="grey" small flat @click="openUrl('https://beyhub.com')">进入官网 <v-icon small color="grey">chevron_right</v-icon></v-btn>
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text>
