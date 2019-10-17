@@ -23,7 +23,7 @@ function showNotifications(data){
   if(window.webkitNotifications){
     let notification = window.webkitNotifications.createNotification(
       'images/icon48.png',  // icon url - can be relative
-      'beyhub.com',  // notification title
+      'Beyhub',  // notification title
       data.message  // notification body text
     );
     notification.show();
