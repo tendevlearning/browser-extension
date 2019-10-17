@@ -2,8 +2,9 @@
   <v-app id="app">
     <v-content>
       <v-toolbar
-        color="primary"
-        dark
+        color="white"
+        light
+        :height="60"
       >
         <v-toolbar-side-icon>
           <v-avatar v-if="bookmark.favIconUrl" size="32" :tile="true">
@@ -27,8 +28,8 @@
       </div>
       <v-card v-show="!loading"
               class="mx-auto"
-              color="primary"
-              dark
+              color="white"
+              light
       >
         <v-divider></v-divider>
         <v-card-text>
@@ -42,7 +43,6 @@
             </v-flex>
             <v-flex sm6>
               <v-autocomplete
-                color="white"
                 v-model="selectedPage"
                 :items="pages"
                 :loading="isLoading"
@@ -61,7 +61,6 @@
             </v-flex>
             <v-flex sm6>
               <v-autocomplete
-                color="white"
                 v-model="selectWidget"
                 :items="widgets"
                 :loading="isLoading"
@@ -83,7 +82,7 @@
           <v-btn flat @click="openUrl(`https://beyhub.com/p/${selectedPage.id}`)">
             <v-icon>open_in_new</v-icon>
           </v-btn>
-          <v-btn color="black" dark :disabled="!(selectWidget.id&&selectedPage.id)"
+          <v-btn color="primary" dark :disabled="!(selectWidget.id&&selectedPage.id)"
                  @click="saveBookmark(selectWidget.id)"
                  block>保存书签
           </v-btn>
