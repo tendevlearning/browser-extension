@@ -1,26 +1,48 @@
 <template>
   <v-app id="app">
     <v-content>
-      <v-card>
-        <v-card-title primary-title>
+      <v-toolbar
+        color="primary"
+        dark
+      >
+        <v-toolbar-side-icon>
           <v-avatar v-if="bookmark.favIconUrl" size="32" :tile="true">
             <img :src="bookmark.favIconUrl" alt="favicon">
           </v-avatar>
-          <span class="title ml-2">将当前页加入书签</span>
-          <v-spacer></v-spacer>
-          <v-btn color="grey" small flat @click="openUrl('https://beyhub.com')">进入官网 <v-icon small color="grey">chevron_right</v-icon></v-btn>
-        </v-card-title>
+          <v-icon size="32" v-else>language</v-icon>
+        </v-toolbar-side-icon>
+        <v-toolbar-title>将当前页加入Beyhub书签</v-toolbar-title>
+        <v-spacer></v-spacer>
+        <v-btn icon flat @click="openUrl('https://beyhub.com')">
+          <v-icon>web</v-icon>
+        </v-btn>
+      </v-toolbar>
+      <div class="text-xs-center mt-5" v-show="loading">
+        <v-progress-circular
+          indeterminate
+          :size="60"
+          :width="5"
+          color="amber"
+        ></v-progress-circular>
+      </div>
+      <v-card v-show="!loading"
+              class="mx-auto"
+              color="primary"
+              dark
+      >
         <v-divider></v-divider>
         <v-card-text>
           <v-layout row wrap>
             <v-flex sm12>
-              <v-text-field prepend-icon="bookmark_border" v-model="bookmark.title" label="书签名"></v-text-field>
+              <v-text-field color="white"
+                            prepend-icon="bookmark_border" v-model="bookmark.title" label="书签名"></v-text-field>
             </v-flex>
             <v-flex sm12>
-              <v-text-field v-model="bookmark.url" prepend-icon="link" label="URL"></v-text-field>
+              <v-text-field color="white" v-model="bookmark.url" prepend-icon="link" label="URL"></v-text-field>
             </v-flex>
             <v-flex sm6>
               <v-autocomplete
+                color="white"
                 v-model="selectedPage"
                 :items="pages"
                 :loading="isLoading"
@@ -39,6 +61,7 @@
             </v-flex>
             <v-flex sm6>
               <v-autocomplete
+                color="white"
                 v-model="selectWidget"
                 :items="widgets"
                 :loading="isLoading"
@@ -60,10 +83,12 @@
           <v-btn flat @click="openUrl(`https://beyhub.com/p/${selectedPage.id}`)">
             <v-icon>open_in_new</v-icon>
           </v-btn>
-          <v-btn color="primary" :disabled="!(selectWidget.id&&selectedPage.id)" @click="saveBookmark(selectWidget.id)"
+          <v-btn color="black" dark :disabled="!(selectWidget.id&&selectedPage.id)"
+                 @click="saveBookmark(selectWidget.id)"
                  block>保存书签
           </v-btn>
         </v-card-actions>
+        <v-divider></v-divider>
         <v-card-text>
           <v-list dense>
             <v-subheader>快捷保存</v-subheader>
@@ -92,6 +117,7 @@
   import dayjs from "dayjs"
   import relativeTime from 'dayjs/plugin/relativeTime'
   import zh_cn from 'dayjs/locale/zh-cn'
+
   dayjs.locale(zh_cn);
   dayjs.extend(relativeTime);
   let bgPage;
@@ -104,6 +130,7 @@
     data() {
       return {
         access_token: '',
+        loading: false,
         bookmark: {
           favIconUrl: null,
           url: '',
@@ -158,7 +185,7 @@
           this.bookmark.title = tabObj.title;
           this.bookmark.url = tabObj.url;
           this.loadPages();
-          if (!this.is_login){
+          if (!this.is_login) {
             this.showMessage("请先登录");
             this.openUrl('https://beyhub.com/login')
           }
@@ -190,6 +217,7 @@
         }
       },
       async saveBookmark(widgetId) {
+        this.loading = true;
         let wId = widgetId || this.selectWidget.id;
         if (!wId) {
           this.showMessage("请先选择看板和碎片");
@@ -202,6 +230,7 @@
         }, {
           headers: {Authorization: 'Bearer ' + this.access_token}
         });
+        this.loading = false;
         let message;
         if (resp.data.code === 0 && resp.status === 200) {
           message = "书签已保存";
@@ -222,12 +251,12 @@
           console.log(resp);
         }
       },
-      dateFormat(date){
+      dateFormat(date) {
         return dayjs(date).toNow();
       },
       showMessage(message) {
         if (this.run_as_extension) {
-          bgPage.showNotifications({message:message,pageId:this.selectedPage.id});
+          bgPage.showNotifications({message: message, pageId: this.selectedPage.id});
           window.close();
         } else {
           alert(message);
