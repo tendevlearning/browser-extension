@@ -7,5 +7,4 @@ yarn-error.log*
 /dist/index.html
 /dist/static/css
 /dist/static/js
-dist.crx
-output.zip
+chrome.zip
