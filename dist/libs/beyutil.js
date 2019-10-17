@@ -1,5 +1,3 @@
-const BOOKMARK_DIRS = "bookmark-dirs";
-
 window.beyutil = {
   categoryChange: async function (access_token) {
     let resp = await axios.get(`https://beyhub.com/api/pages/ext/page/${$('#beyHub-firstCategory').val()}/widgets`, {
