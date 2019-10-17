@@ -6,7 +6,7 @@
           <v-avatar v-if="bookmark.favIconUrl" size="32" :tile="true">
             <img :src="bookmark.favIconUrl" alt="favicon">
           </v-avatar>
-          <v-icon size="32" v-else>language</v-icon>
+          <v-icon size="32" color="grey" v-else>language</v-icon>
         </v-toolbar-side-icon>
         <v-toolbar-title>将当前页加入Beyhub书签</v-toolbar-title>
         <v-spacer></v-spacer>
@@ -70,7 +70,7 @@
           </v-layout>
         </v-card-text>
         <v-card-actions>
-          <v-btn flat color="primary" @click="openUrl(`https://beyhub.com/p/${selectedPage.id}`)">
+          <v-btn flat color="primary" :disabled="!selectedPage.id" @click="openUrl(`https://beyhub.com/p/${selectedPage.id}`)">
             <v-icon>open_in_new</v-icon>
           </v-btn>
           <v-btn color="primary" :disabled="!(selectWidget.id&&selectedPage.id)"
@@ -78,7 +78,7 @@
                  block>保存书签
           </v-btn>
         </v-card-actions>
-        <v-divider></v-divider>
+        <v-divider class="mt-3"></v-divider>
         <v-card-text>
           <v-list dense>
             <v-subheader>快捷保存</v-subheader>
