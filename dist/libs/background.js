@@ -32,7 +32,7 @@ function showNotifications(data){
   }else if(chrome.notifications){
     let opt = {
       type: 'basic',
-      title: 'beyhub.com',
+      title: 'Beyhub',
       message: data.message,
       iconUrl: 'images/icon48.png',
     };

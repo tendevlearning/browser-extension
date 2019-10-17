@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "拾贝 beyhub.com",
+  "name": "Beyhub",
   "version": "1.0.6",
-  "description": "做信息洪流中的一杆旗帜",
+  "description": "信息洪流中的一杆旗帜",
   "icons": {
     "16": "images/icon16.png",
     "48": "images/icon48.png",
@@ -16,7 +16,7 @@
       "16": "images/icon16.png",
       "48": "images/icon48.png"
     },
-    "default_title": "beyhub.com",
+    "default_title": "Beyhub",
     "default_popup": "popup.html"
   },
   "chrome_url_overrides": {
