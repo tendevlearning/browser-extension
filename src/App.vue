@@ -1,11 +1,7 @@
 <template>
   <v-app id="app">
     <v-content>
-      <v-toolbar
-        color="white"
-        light
-        :height="60"
-      >
+      <v-toolbar :height="60">
         <v-toolbar-side-icon>
           <v-avatar v-if="bookmark.favIconUrl" size="32" :tile="true">
             <img :src="bookmark.favIconUrl" alt="favicon">
@@ -14,7 +10,7 @@
         </v-toolbar-side-icon>
         <v-toolbar-title>将当前页加入Beyhub书签</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn icon flat @click="openUrl('https://beyhub.com')">
+        <v-btn color="amber darken-3" icon flat @click="openUrl('https://beyhub.com')">
           <v-icon>web</v-icon>
         </v-btn>
       </v-toolbar>
@@ -26,20 +22,15 @@
           color="amber"
         ></v-progress-circular>
       </div>
-      <v-card v-show="!loading"
-              class="mx-auto"
-              color="white"
-              light
-      >
+      <v-card v-show="!loading" class="mx-auto">
         <v-divider></v-divider>
         <v-card-text>
           <v-layout row wrap>
             <v-flex sm12>
-              <v-text-field color="white"
-                            prepend-icon="bookmark_border" v-model="bookmark.title" label="书签名"></v-text-field>
+              <v-text-field prepend-icon="bookmark_border" v-model="bookmark.title" label="书签名"></v-text-field>
             </v-flex>
             <v-flex sm12>
-              <v-text-field color="white" v-model="bookmark.url" prepend-icon="link" label="URL"></v-text-field>
+              <v-text-field v-model="bookmark.url" prepend-icon="link" label="URL"></v-text-field>
             </v-flex>
             <v-flex sm6>
               <v-autocomplete
@@ -79,10 +70,10 @@
           </v-layout>
         </v-card-text>
         <v-card-actions>
-          <v-btn flat @click="openUrl(`https://beyhub.com/p/${selectedPage.id}`)">
+          <v-btn flat color="primary" @click="openUrl(`https://beyhub.com/p/${selectedPage.id}`)">
             <v-icon>open_in_new</v-icon>
           </v-btn>
-          <v-btn color="primary" dark :disabled="!(selectWidget.id&&selectedPage.id)"
+          <v-btn color="primary" :disabled="!(selectWidget.id&&selectedPage.id)"
                  @click="saveBookmark(selectWidget.id)"
                  block>保存书签
           </v-btn>
@@ -99,7 +90,7 @@
                   <v-list-tile-sub-title>{{ dateFormat(item.createdAt) }}</v-list-tile-sub-title>
                 </v-list-tile-content>
                 <v-list-tile-action>
-                  <v-btn icon small @click.stop.native="openUrl(`https://beyhub.com/w/${item.widgetId}`)">
+                  <v-btn color="primary" icon small @click.stop.native="openUrl(`https://beyhub.com/w/${item.widgetId}`)">
                     <v-icon small>open_in_new</v-icon>
                   </v-btn>
                 </v-list-tile-action>

@@ -9,7 +9,14 @@ import 'vuetify/dist/vuetify.min.css'
 
 import '@/assets/main.css';
 Vue.use(VueAxios, axios);
-Vue.use(Vuetify);
+Vue.use(Vuetify,{
+  theme: {
+    primary: '#FF6F00',
+    secondary: '#b0bec5',
+    accent: '#8c9eff',
+    error: '#F44336'
+  }
+});
 Vue.config.productionTip = false;
 Vue.prototype.$http.defaults.withCredentials = false;
 
