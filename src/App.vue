@@ -70,7 +70,8 @@
           </v-layout>
         </v-card-text>
         <v-card-actions>
-          <v-btn flat color="primary" :disabled="!selectedPage.id" @click="openUrl(`https://beyhub.com/p/${selectedPage.id}`)">
+          <v-btn flat color="primary" :disabled="!selectedPage.id"
+                 @click="openUrl(`https://beyhub.com/p/${selectedPage.id}`)">
             <v-icon>open_in_new</v-icon>
           </v-btn>
           <v-btn color="primary" :disabled="!(selectWidget.id&&selectedPage.id)"
@@ -90,7 +91,8 @@
                   <v-list-tile-sub-title>{{ dateFormat(item.createdAt) }}</v-list-tile-sub-title>
                 </v-list-tile-content>
                 <v-list-tile-action>
-                  <v-btn color="primary" icon small @click.stop.native="openUrl(`https://beyhub.com/w/${item.widgetId}`)">
+                  <v-btn color="primary" icon small
+                         @click.stop.native="openUrl(`https://beyhub.com/w/${item.widgetId}`)">
                     <v-icon small>open_in_new</v-icon>
                   </v-btn>
                 </v-list-tile-action>
@@ -199,7 +201,9 @@
               window.open('https://beyhub.com');
             }
           } else {
-            this.pages = resp.data.data.kanbans;
+            this.pages = resp.data.data.kanbans.filter(e => {
+              return e.bmwCount > 0
+            });
             this.recent = resp.data.data.recent;
           }
         } else {
