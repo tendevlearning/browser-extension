@@ -1,3 +1,5 @@
 #!/usr/bin/env bash
 yarn build
-zip -q -r -o chrome.zip ./dist
+cd dist
+zip -q -r -o chrome.zip *
+mv chrome.zip ../chrome.zip
