@@ -1,9 +1,11 @@
 let cookie = {};
+
 function currentTab(cb) {
   chrome.tabs.query({active: true, currentWindow: true}, function (tabs) {
     cb(tabs[0]);
   });
 }
+
 function getCookie(cb) {
   chrome.cookies.getAll({
     url: 'https://beyhub.com',
@@ -17,10 +19,11 @@ function getCookie(cb) {
     }
   });
 }
+
 //将data数据以桌面通知的方式显示给用户
-function showNotifications(data){
+function showNotifications(data) {
   //显示一个桌面通知
-  if(window.webkitNotifications){
+  if (window.webkitNotifications) {
     let notification = window.webkitNotifications.createNotification(
       'images/icon48.png',  // icon url - can be relative
       'Beyhub',  // notification title
@@ -28,28 +31,32 @@ function showNotifications(data){
     );
     notification.show();
     // 设置3秒后，将桌面通知dismiss
-    setTimeout(function(){notification.cancel();}, 3000);
-  }else if(chrome.notifications){
+    setTimeout(function () {
+      notification.cancel();
+    }, 3000);
+  } else if (chrome.notifications) {
     let opt = {
       type: 'basic',
       title: 'Beyhub',
       message: data.message,
       iconUrl: 'images/icon48.png',
     };
-    chrome.notifications.create('', opt, function(id){
-      setTimeout(function(){
-        chrome.notifications.clear(id, function(){});
+    chrome.notifications.create('', opt, function (id) {
+      setTimeout(function () {
+        chrome.notifications.clear(id, function () {
+        });
       }, 3000);
     });
-    chrome.notifications.onClicked.addListener(()=>{
+    chrome.notifications.onClicked.addListener(() => {
       beyutil.openUrlCurrentTab(`https://beyhub.com/p/${data.pageId}`);
     })
-  }else{
+  } else {
     alert('当前浏览器不支持消息通知');
   }
 }
+
 (function () {
-  getCookie((cookie)=>{
+  getCookie((cookie) => {
     console.log(cookie)
   });
   chrome.omnibox.onInputChanged.addListener(debounce(function (text, suggest) {
@@ -73,27 +80,27 @@ function showNotifications(data){
               content: `${url}/login`,
               description: `登录 beyhub.com - ${url}/login`
             }
-          ])
+          ]);
           return;
         }
       });
       console.info('background.js omnibox.onInputChanged', resp, text, suggest);
       if (resp.data.code === 0) {
         let list = [];
+        if (resp.data.data.kanbans.length) {
+          for (let i = 0; i < resp.data.data.kanbans.length; i++) {
+            list.push({
+              content: resp.data.data.kanbans[i].url,
+              description: `页面 | ${beyutil.htmlEncodeByRegExp(resp.data.data.kanbans[i].title)} - ${resp.data.data.kanbans[i].url}`
+            })
+          }
+        }
         if (resp.data.data.bookmarks.length) {
           for (let i = 0; i < resp.data.data.bookmarks.length; i++) {
             let url = beyutil.htmlEncodeByRegExp(resp.data.data.bookmarks[i].url);
             list.push({
               content: url,
-              description: beyutil.htmlEncodeByRegExp(resp.data.data.bookmarks[i].name) + ' - ' + url
-            })
-          }
-        }
-        if (resp.data.data.kanbans.length) {
-          for (let i = 0; i < resp.data.data.kanbans.length; i++) {
-            list.push({
-              content: resp.data.data.kanbans[i].url,
-              description: beyutil.htmlEncodeByRegExp(resp.data.data.kanbans[i].title) + ' - ' + resp.data.data.kanbans[i].url
+              description: `书签 | ${beyutil.htmlEncodeByRegExp(resp.data.data.bookmarks[i].name)} - ${url}`
             })
           }
         }
