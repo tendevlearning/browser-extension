@@ -70,10 +70,10 @@
           </v-layout>
         </v-card-text>
         <v-card-actions>
-          <v-btn icon color="primary" :disabled="!selectedPage.id" @click="createWidgetDialog=true">
+          <v-btn icon outline color="primary" :disabled="!selectedPage.id" @click="createWidgetDialog=true">
             <v-icon>add</v-icon>
           </v-btn>
-          <v-btn icon color="primary" :disabled="!selectedPage.id"
+          <v-btn icon flat color="primary" :disabled="!selectedPage.id" outline
                  @click="openUrl(`https://beyhub.com/p/${selectedPage.id}`)">
             <v-icon>open_in_new</v-icon>
           </v-btn>
@@ -94,7 +94,7 @@
                   <v-list-tile-sub-title>{{ dateFormat(item.createdAt) }}</v-list-tile-sub-title>
                 </v-list-tile-content>
                 <v-list-tile-action>
-                  <v-btn color="primary" icon small
+                  <v-btn color="primary" icon small outline
                          @click.stop.native="openUrl(`https://beyhub.com/w/${item.widgetId}`)">
                     <v-icon small>open_in_new</v-icon>
                   </v-btn>
@@ -107,26 +107,19 @@
     </v-content>
     <v-dialog v-model="createWidgetDialog" width="300">
       <v-card>
-        <v-card-title class="headline">为页面添加新组件</v-card-title>
+        <v-card-title class="headline">添加新的书签组件</v-card-title>
+        <v-divider></v-divider>
         <v-card-text>
-          Let Google help apps determine location. This means sending anonymous location data to Google, even when no
-          apps are running.
+          <v-text-field v-model="newWidgetForm.title" label="组件名称"></v-text-field>
         </v-card-text>
+        <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn
-            color="green darken-1"
-            flat="flat"
-            @click="createWidgetDialog = false"
-          >
-            Disagree
+          <v-btn block color="grey" flat="flat" @click="createWidgetDialog = false">
+            关闭
           </v-btn>
-          <v-btn
-            color="green darken-1"
-            flat="flat"
-            @click="createWidgetDialog = false"
-          >
-            Agree
+          <v-btn block color="primary" @click="createWidget">
+            保存
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -150,13 +143,17 @@
     components: {},
     data() {
       return {
-        createWidgetDialog:false,
+        createWidgetDialog: false,
         access_token: '',
         loading: false,
         bookmark: {
           favIconUrl: null,
           url: '',
           title: '',
+        },
+        newWidgetForm: {
+          title: null,
+          pageId: null,
         },
         selectedPage: {title: null, id: null},
         selectedWidget: {title: null, id: null},
@@ -247,8 +244,6 @@
       },
       // 保存书签
       async saveBookmark(widgetId) {
-        console.log(JSON.stringify(this.selectedWidget))
-        return
         this.loading = true;
         let wId = widgetId || this.selectedWidget.id;
         if (!wId) {
@@ -296,8 +291,27 @@
         }
       },
       // 如果没有对应名字的组件，则创建一个
-      createWidget() {
-
+      async createWidget() {
+        if (this.createWidgetDialog.pageId === null || this.createWidgetDialog.title === null) {
+          this.showMessage("创建组件的表单不完整");
+          return
+        }
+        this.newWidgetForm.pageId = this.selectedPage.id;
+        let resp = await this.$http.post(`https://beyhub.com/api/pages/ext/page/${this.selectedPage.id}/create-widget`,
+          this.newWidgetForm, {
+            headers: {
+              Authorization: 'Bearer ' + this.access_token
+            },
+          });
+        if (resp.data.code === 0) {
+          this.widgets = resp.data.data;
+          this.selectedWidget = this.widgets[0];
+          this.createWidgetDialog = false;
+        } else {
+          this.showMessage(`创建失败${resp.data.message}`);
+          console.log(resp);
+        }
+        this.createWidgetDialog = false;
       }
     }
   }
