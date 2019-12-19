@@ -161,7 +161,7 @@
           })
         } else {
           // web开发模式下测试用
-          this.access_token = '467472ba-b18a-465c-bc29-d92f4b12567c';
+          this.access_token = 'e3ce8513-7eb9-41d7-9abc-d7697e0012e1';
           tabObj = {
             "favIconUrl": "https://g.alicdn.com/trip/tools/img/favicon.ico",
             "highlighted": true,
