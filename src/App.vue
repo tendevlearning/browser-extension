@@ -51,9 +51,8 @@
               ></v-autocomplete>
             </v-flex>
             <v-flex sm6>
-              <v-combobox
+              <v-autocomplete
                 v-model="selectedWidget"
-                clearable
                 :items="widgets"
                 :loading="isLoading"
                 hide-selected
@@ -66,16 +65,19 @@
                 item-value="id"
                 placeholder="选择组件"
                 return-object
-              ></v-combobox>
+              ></v-autocomplete>
             </v-flex>
           </v-layout>
         </v-card-text>
         <v-card-actions>
-          <v-btn flat color="primary" :disabled="!selectedPage.id"
+          <v-btn icon color="primary" :disabled="!selectedPage.id" @click="createWidgetDialog=true">
+            <v-icon>add</v-icon>
+          </v-btn>
+          <v-btn icon color="primary" :disabled="!selectedPage.id"
                  @click="openUrl(`https://beyhub.com/p/${selectedPage.id}`)">
             <v-icon>open_in_new</v-icon>
           </v-btn>
-          <v-btn color="primary" :disabled="!(selectedWidget.id&&selectedPage.id)"
+          <v-btn color="primary" :disabled="is_bookmark_can_save"
                  @click="saveBookmark(selectedWidget.id)"
                  block>保存书签
           </v-btn>
@@ -103,6 +105,32 @@
         </v-card-text>
       </v-card>
     </v-content>
+    <v-dialog v-model="createWidgetDialog" width="300">
+      <v-card>
+        <v-card-title class="headline">为页面添加新组件</v-card-title>
+        <v-card-text>
+          Let Google help apps determine location. This means sending anonymous location data to Google, even when no
+          apps are running.
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="green darken-1"
+            flat="flat"
+            @click="createWidgetDialog = false"
+          >
+            Disagree
+          </v-btn>
+          <v-btn
+            color="green darken-1"
+            flat="flat"
+            @click="createWidgetDialog = false"
+          >
+            Agree
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-app>
 </template>
 
@@ -122,6 +150,7 @@
     components: {},
     data() {
       return {
+        createWidgetDialog:false,
         access_token: '',
         loading: false,
         bookmark: {
@@ -129,8 +158,8 @@
           url: '',
           title: '',
         },
-        selectedPage: {title: "", id: null},
-        selectedWidget: {title: "", id: null},
+        selectedPage: {title: null, id: null},
+        selectedWidget: {title: null, id: null},
         isLoading: false,
         searchWidget: null,
         searchPage: null,
@@ -145,6 +174,10 @@
       },
       is_login: function () {
         return !!this.access_token;
+      },
+      // 页面和widget是否都已选好了
+      is_bookmark_can_save: function () {
+        return !(this.selectedWidget.id && this.selectedPage.id);
       }
     },
     mounted() {
@@ -214,6 +247,8 @@
       },
       // 保存书签
       async saveBookmark(widgetId) {
+        console.log(JSON.stringify(this.selectedWidget))
+        return
         this.loading = true;
         let wId = widgetId || this.selectedWidget.id;
         if (!wId) {
