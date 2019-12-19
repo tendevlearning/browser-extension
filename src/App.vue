@@ -51,21 +51,22 @@
               ></v-autocomplete>
             </v-flex>
             <v-flex sm6>
-              <v-autocomplete
-                v-model="selectWidget"
+              <v-combobox
+                v-model="selectedWidget"
+                clearable
                 :items="widgets"
                 :loading="isLoading"
                 hide-selected
                 :search-input.sync="searchWidget"
                 prepend-icon="widgets"
-                auto-select-first
+                open-on-clear
                 hide-no-data
                 dense
                 item-text="title"
                 item-value="id"
-                placeholder="选择碎片"
+                placeholder="选择组件"
                 return-object
-              ></v-autocomplete>
+              ></v-combobox>
             </v-flex>
           </v-layout>
         </v-card-text>
@@ -74,8 +75,8 @@
                  @click="openUrl(`https://beyhub.com/p/${selectedPage.id}`)">
             <v-icon>open_in_new</v-icon>
           </v-btn>
-          <v-btn color="primary" :disabled="!(selectWidget.id&&selectedPage.id)"
-                 @click="saveBookmark(selectWidget.id)"
+          <v-btn color="primary" :disabled="!(selectedWidget.id&&selectedPage.id)"
+                 @click="saveBookmark(selectedWidget.id)"
                  block>保存书签
           </v-btn>
         </v-card-actions>
@@ -129,7 +130,7 @@
           title: '',
         },
         selectedPage: {title: "", id: null},
-        selectWidget: {title: "", id: null},
+        selectedWidget: {title: "", id: null},
         isLoading: false,
         searchWidget: null,
         searchPage: null,
@@ -186,6 +187,7 @@
       openUrl(url) {
         window.open(url, '_blank')
       },
+      // 加载用户可编辑的页面
       async loadPages() {
         this.isLoading = true;
         let resp = await this.$http.get(`https://beyhub.com/api/pages/ext/page/accessible`, {
@@ -210,11 +212,12 @@
           console.log(resp);
         }
       },
+      // 保存书签
       async saveBookmark(widgetId) {
         this.loading = true;
-        let wId = widgetId || this.selectWidget.id;
+        let wId = widgetId || this.selectedWidget.id;
         if (!wId) {
-          this.showMessage("请先选择看板和碎片");
+          this.showMessage("请先选择看板和组件");
         }
         let resp = await this.$http.post(`https://beyhub.com/api/pages/ext/page/${wId}/save-item`, {
           b: this.bookmark.title,
@@ -233,6 +236,7 @@
         }
         this.showMessage(message);
       },
+      // 加载组件
       async loadWidgets() {
         let resp = await this.$http.get(`https://beyhub.com/api/pages/ext/page/${this.selectedPage.id}/widgets`, {
           headers: {
@@ -255,6 +259,10 @@
         } else {
           alert(message);
         }
+      },
+      // 如果没有对应名字的组件，则创建一个
+      createWidget() {
+
       }
     }
   }
