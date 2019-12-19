@@ -114,7 +114,6 @@
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
-          <v-spacer></v-spacer>
           <v-btn block color="grey" flat="flat" @click="createWidgetDialog = false">
             关闭
           </v-btn>
